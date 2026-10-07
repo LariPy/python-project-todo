@@ -3,8 +3,7 @@
 import sys
 
 from PySide6.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout,
-    QListWidget, QLineEdit, QPushButton
+    QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, QPushButton
 )
 
 
@@ -19,48 +18,24 @@ class MainWindow(QMainWindow):
 
         ### Window Settings ###
         self.setWindowTitle("Todos")
-        self.resize(560, 560)
+        self.resize(840, 560)
 
         ### Contents/Layout ###
 
-        ### Layout
+        # Layout Content
+
+        # Layout
         top = QHBoxLayout()
         mid = QHBoxLayout()
         footer = QHBoxLayout()
 
-        ### Layout Content
-        # top content
-        task_input = QLineEdit(placeholderText="Input task")
-        top.addWidget(task_input)
-        btn_add_task = QPushButton("Add task")
-        top.addWidget(btn_add_task)
-
-        # mid content, list
-        mid_list = QListWidget()
-        mid.addWidget(mid_list)
-
-        # TODO list test content
-        for i in range(10):
-            mid_list.addItem(f'test item {i}')
-        # TODO list items
-            # object?
-            # editable text
-            # checkmark
-            # delete button?
-
-        # footer content
-        footer_button = QPushButton("foot")
-        footer.addWidget(footer_button)
-        # TODO
-            # clear list
-            # where is data?
-            # need to refresh list when things are deleted?
+        # Add Content to Layout
 
         # Root, Container
         root = QVBoxLayout()
-        root.addLayout(top)
-        root.addLayout(mid)
-        root.addLayout(footer)
+        root.addWidget(top)
+        root.addWidget(mid)
+        root.addWidget(footer)
         container = QWidget()
         container.setLayout(root)
         self.setCentralWidget(container)
