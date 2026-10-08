@@ -15,3 +15,10 @@ Todo app
 
 class taskcard
 class mainwindow
+
+functional stuff:
+- app is opened, load tasks.json
+- put tasks into a list
+- show list in gui
+- when a task is added, add to list, write list to json
+- in other words: "change list -> save to json -> refresh display"

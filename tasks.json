@@ -1,14 +1,18 @@
 [
-    {
-        "text": "sgds",
-        "done": false
-    },
-    {
-        "text": "adsfawrg",
-        "done": false
-    },
-    {
-        "text": "rfreg",
-        "done": false
-    }
+  {
+    "text": "Buy milk",
+    "done": false
+  },
+  {
+    "text": "Write report",
+    "done": false
+  },
+  {
+    "text": "Buy milk",
+    "done": false
+  },
+  {
+    "text": "Write report",
+    "done": false
+  }
 ]
