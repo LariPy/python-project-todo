@@ -24,6 +24,8 @@ def save_tasks(tasks):
 
 tasks = load_tasks()          # read once at startup
 
+print(tasks)
+
 def add_task(text):
     tasks.append({"text": text, "done": False})
     save_tasks(tasks)         # write after the change

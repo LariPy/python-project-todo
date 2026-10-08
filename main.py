@@ -19,16 +19,15 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        """### Load Tasks ###"""
-        # load tasks here using load method from methods
-        # tasks list
+        """### File Location, Load Tasks ###"""
+        self.FILE = Path("tasks.json")
+        self.tasks = self.load_tasks(self.FILE)
 
         """### Window Settings ###"""
         self.setWindowTitle("Todos")
         self.resize(560, 560)
 
         """### Contents/Layout ###"""
-
         ### Layout
         top = QHBoxLayout()
         mid = QHBoxLayout()
@@ -74,13 +73,13 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(container)
 
     """### Methods ###"""
-    # make sure methods are not inside __init__
     # load tasks
-        # runs when app is opened
-        # loads tasks.json into a list
-        # check if file exists, returns read list
-        # if file does not exist, returns empty list
+    def load_tasks(self):
+        if self.FILE.exists():
+            return json.loads(self.FILE.read_text(encoding="utf-8"))
+        return []
 
+    # TODO methods below
     # save tasks
         # writes tasks list into tasks.json
         # is called when tasks list has changes
