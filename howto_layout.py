@@ -33,17 +33,17 @@ class MainWindow(QMainWindow):
 
         # Root, Container
         root = QVBoxLayout()
-        root.addWidget(top)
-        root.addWidget(mid)
-        root.addWidget(footer)
+        root.addLayout(top)
+        root.addLayout(mid)
+        root.addLayout(footer)
         container = QWidget()
         container.setLayout(root)
         self.setCentralWidget(container)
 
-        ### Methods ###
-        # add
-        # delete
-        # update_count
+    ### Methods ###
+    # add
+    # delete
+    # update_count
 
 ### ---------------------------- ### MAIN ### ------ ###
 def main():

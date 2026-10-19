@@ -6,8 +6,12 @@ from pathlib import Path
 
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout,
-    QListWidget, QLineEdit, QPushButton
-)
+    QListWidget, QListWidgetItem, QLineEdit, QPushButton
+    )
+
+from PySide6.QtCore import (
+    Qt
+    )
 
 
 
@@ -19,15 +23,15 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        """### File Location, Load Tasks ###"""
-        self.FILE = Path("tasks.json")
-        self.tasks = self.load_tasks(self.FILE)
+        """### Init: File Location, Load Tasks ###"""
+        self._FILE = Path("tasks.json")
+        self._tasks = self.load_tasks()
 
-        """### Window Settings ###"""
+        """### Init: Window Settings ###"""
         self.setWindowTitle("Todos")
         self.resize(560, 560)
 
-        """### Contents/Layout ###"""
+        """### Init: Contents/Layout ###"""
         ### Layout
         top = QHBoxLayout()
         mid = QHBoxLayout()
@@ -35,20 +39,18 @@ class MainWindow(QMainWindow):
 
         ### Layout Content
         # top content
-        task_input = QLineEdit(placeholderText="Input task")
-        top.addWidget(task_input)
+        self.task_input = QLineEdit(placeholderText="Input task")
+        self.task_input.returnPressed.connect(self.add_task)
+        top.addWidget(self.task_input)
         btn_add_task = QPushButton("Add task")
+        btn_add_task.clicked.connect(self.add_task)
         top.addWidget(btn_add_task)
 
-        # mid content, list
-        mid_list = QListWidget()
-        mid.addWidget(mid_list)
-
-        # TODO may need to use "self" for mid_list, somewhere
-            # so that data can be passed
-        # TODO list test content
-        for i in range(10):
-            mid_list.addItem(f'test item {i}')
+        # mid content, task list view
+        self.task_list_view = QListWidget()
+        mid.addWidget(self.task_list_view)
+        self.refresh_task_list_view()
+        
         # TODO list items
             # object?
             # editable text
@@ -56,7 +58,8 @@ class MainWindow(QMainWindow):
             # delete button?
 
         # footer content
-        footer_button = QPushButton("foot")
+        footer_button = QPushButton("Clear List")
+        footer_button.clicked.connect(self.clear_list)
         footer.addWidget(footer_button)
         # TODO
             # clear list
@@ -75,20 +78,36 @@ class MainWindow(QMainWindow):
     """### Methods ###"""
     # load tasks
     def load_tasks(self):
-        if self.FILE.exists():
-            return json.loads(self.FILE.read_text(encoding="utf-8"))
+        if self._FILE.exists():
+            return json.loads(self._FILE.read_text(encoding="utf-8"))
         return []
 
     # TODO methods below
     # save tasks
         # writes tasks list into tasks.json
         # is called when tasks list has changes
+    def save_tasks(self):
+        self._FILE.write_text(json.dumps(self._tasks, indent=2), encoding="utf-8")
+
+    # refresh task list view
+        # any time a change is made to tasks, update tasks list (view)
+        # for loop, add stuff to tasks list with tasks_list.addItem()
+        # TODO: "done" status is not kept 
+    def refresh_task_list_view(self):
+        self.task_list_view.clear()
+        for task in self._tasks:
+            item = QListWidgetItem(task["text"])
+            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+            item.setCheckState(Qt.CheckState.Checked if task["done"] else Qt.CheckState.Unchecked)
+            self.task_list_view.addItem(item)
 
     # add task
-        # runs when input field has text AND add task button is clicked
-        # creates a dict, "text" = text from input field, "done" = False
-        # adds created "task" to tasks list
-        # runs "save tasks" to write updated list to tasks.json
+    def add_task(self):
+        test_item = {"text": self.task_input.text(), "done": False}
+        self._tasks.append(test_item)
+        self.save_tasks()
+        self.refresh_task_list_view()
+        self.task_input.clear()
 
     # edit task (???)
         # runs when ???
@@ -97,21 +116,37 @@ class MainWindow(QMainWindow):
         # run "save tasks"
 
     # delete
+        # (not sure if this is necessary if clear completed is used instead)
         # runs when "delete" button is clicked
         # removes selected task from the tasks list
-        # runs "save tasks" to update tasks.json
+        # self.save_tasks()
+        # self.refresh_task_list_view()
+
+    # checkmark check
+        # if checkmark is clicked, it does not show on tasks.json
+        # it's not saved...
+        # could it still work with clear completed method?
 
     # clear completed
-        # runs when "clear" button is clicked
-        # removes all tasks with "done" = True from tasks list
-        # runs "save tasks" to update tasks.json
+        # for task in tasks
+            # if done == false
+                # tasks append new_task_list
+        # save tasks
+        # refresh view
+
+    # clear list button method (change to clear completed later?)
+    def clear_list(self):
+        self.task_list_view.clear()
+        self._tasks = []
+        self.save_tasks()
+        self.refresh_task_list_view()
 
 
 
 ### ---------------------------- ### MAIN ### ------ ###
 def main():
     app = QApplication(sys.argv)
-    app.setApplicationName("Basic GUI")
+    app.setApplicationName("TODO")
     # data_dir = Path()
     window = MainWindow()
     window.show()
