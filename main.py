@@ -46,25 +46,24 @@ class MainWindow(QMainWindow):
         btn_add_task.clicked.connect(self.add_task)
         top.addWidget(btn_add_task)
 
-        # mid content, task list view
+        # mid content
+        # task list view
         self.task_list_view = QListWidget()
+        self.task_list_view.setSelectionMode(QListWidget.ExtendedSelection)
         mid.addWidget(self.task_list_view)
         self.refresh_task_list_view()
-        
-        # TODO list items
-            # object?
-            # editable text
-            # checkmark
-            # delete button?
+        self.task_list_view.itemChanged.connect(self.on_item_changed)
 
         # footer content
-        footer_button = QPushButton("Clear List")
-        footer_button.clicked.connect(self.clear_list)
-        footer.addWidget(footer_button)
-        # TODO
-            # clear list
-            # where is data?
-            # need to refresh list when things are deleted?
+        delete_item_btn = QPushButton("Delete Item")
+        delete_item_btn.clicked.connect(self.delete_item)
+        clear_list_btn = QPushButton("Clear List")
+        clear_list_btn.clicked.connect(self.clear_list)
+        clear_completed_btn = QPushButton("Clear Completed")
+        clear_completed_btn.clicked.connect(self.clear_completed)
+        footer.addWidget(delete_item_btn)
+        footer.addWidget(clear_list_btn)
+        footer.addWidget(clear_completed_btn)
 
         # Root, Container
         root = QVBoxLayout()
@@ -82,17 +81,13 @@ class MainWindow(QMainWindow):
             return json.loads(self._FILE.read_text(encoding="utf-8"))
         return []
 
-    # TODO methods below
     # save tasks
         # writes tasks list into tasks.json
-        # is called when tasks list has changes
+        # call when tasks list has changes
     def save_tasks(self):
         self._FILE.write_text(json.dumps(self._tasks, indent=2), encoding="utf-8")
 
     # refresh task list view
-        # any time a change is made to tasks, update tasks list (view)
-        # for loop, add stuff to tasks list with tasks_list.addItem()
-        # TODO: "done" status is not kept 
     def refresh_task_list_view(self):
         self.task_list_view.clear()
         for task in self._tasks:
@@ -115,31 +110,39 @@ class MainWindow(QMainWindow):
         # change "text" in the selected item from the list
         # run "save tasks"
 
-    # delete
-        # (not sure if this is necessary if clear completed is used instead)
-        # runs when "delete" button is clicked
-        # removes selected task from the tasks list
-        # self.save_tasks()
-        # self.refresh_task_list_view()
-
-    # checkmark check
-        # if checkmark is clicked, it does not show on tasks.json
-        # it's not saved...
-        # could it still work with clear completed method?
+    # delete item
+    def delete_item(self):
+        # get selected item index, do nothing of nothing is selected
+        selected_row = self.task_list_view.currentRow()
+        if selected_row == -1:
+            return
+        # pop selected item, save change and refresh
+        self._tasks.pop(selected_row)
+        self.save_tasks()
+        self.refresh_task_list_view()
 
     # clear completed
-        # for task in tasks
-            # if done == false
-                # tasks append new_task_list
-        # save tasks
-        # refresh view
+    def clear_completed(self):
+        new_list = []
+        for task in self._tasks:
+            if task["done"] == False:
+                new_list.append(task)
+        self._tasks = new_list
+        self.save_tasks()
+        self.refresh_task_list_view()
 
-    # clear list button method (change to clear completed later?)
+    # clear list
     def clear_list(self):
         self.task_list_view.clear()
         self._tasks = []
         self.save_tasks()
         self.refresh_task_list_view()
+
+    # checkmark change
+    def on_item_changed(self, item):
+        selected_row = self.task_list_view.row(item)
+        self._tasks[selected_row]["done"] = item.checkState() == Qt.CheckState.Checked
+        self.save_tasks()
 
 
 
