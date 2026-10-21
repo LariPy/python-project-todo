@@ -10,8 +10,10 @@ from PySide6.QtWidgets import (
     )
 
 from PySide6.QtCore import (
-    Qt
+    Qt, QStandardPaths, QUrl
     )
+
+from PySide6.QtGui import QDesktopServices
 
 
 
@@ -24,12 +26,18 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         """### Init: File Location, Load Tasks ###"""
-        self._FILE = Path("tasks.json")
+        data_dir = Path(QStandardPaths.writableLocation(QStandardPaths.AppDataLocation))
+        data_dir.mkdir(parents=True, exist_ok=True)
+        self._FILE = data_dir / "tasks.json"
         self._tasks = self.load_tasks()
 
         """### Init: Window Settings ###"""
         self.setWindowTitle("Todos")
         self.resize(560, 560)
+
+        """### Init: Menu Bar ###"""
+        help_menu = self.menuBar().addMenu("Help")
+        help_menu.addAction("Open Data Folder", self.open_data_folder)
 
         """### Init: Contents/Layout ###"""
         ### Layout
@@ -99,7 +107,10 @@ class MainWindow(QMainWindow):
 
     # add task
     def add_task(self):
-        test_item = {"text": self.task_input.text(), "done": False}
+        text = self.task_input.text().strip()
+        if not text:
+            return
+        test_item = {"text": text, "done": False}
         self._tasks.append(test_item)
         self.save_tasks()
         self.refresh_task_list_view()
@@ -143,13 +154,17 @@ class MainWindow(QMainWindow):
         self._tasks[selected_row]["done"] = item.checkState() == Qt.CheckState.Checked
         self.save_tasks()
 
+    # open data folder
+    def open_data_folder(self):
+        path = QUrl.fromLocalFile(str(self._FILE.resolve().parent))
+        QDesktopServices.openUrl(path)
+
 
 
 ### ---------------------------- ### MAIN ### ------ ###
 def main():
     app = QApplication(sys.argv)
-    app.setApplicationName("TODO")
-    # data_dir = Path()
+    app.setApplicationName("Todo App")
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
