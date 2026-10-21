@@ -1,3 +1,6 @@
+
+# using this for learning/ideas/inspiration
+
 """A small todo app built with PySide6 using Qt's Model/View architecture.
 
 Run:  pip install PySide6 && python todo_app.py
