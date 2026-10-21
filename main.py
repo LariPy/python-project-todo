@@ -51,6 +51,7 @@ class MainWindow(QMainWindow):
         self.task_list_view = QListWidget()
         self.task_list_view.setSelectionMode(QListWidget.ExtendedSelection)
         mid.addWidget(self.task_list_view)
+        # refresh view on launch, item changed signal
         self.refresh_task_list_view()
         self.task_list_view.itemChanged.connect(self.on_item_changed)
 
@@ -92,7 +93,7 @@ class MainWindow(QMainWindow):
         self.task_list_view.clear()
         for task in self._tasks:
             item = QListWidgetItem(task["text"])
-            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEditable)
             item.setCheckState(Qt.CheckState.Checked if task["done"] else Qt.CheckState.Unchecked)
             self.task_list_view.addItem(item)
 
@@ -103,12 +104,6 @@ class MainWindow(QMainWindow):
         self.save_tasks()
         self.refresh_task_list_view()
         self.task_input.clear()
-
-    # edit task (???)
-        # runs when ???
-        # how to figure out which item in a list is "selected" ???
-        # change "text" in the selected item from the list
-        # run "save tasks"
 
     # delete item
     def delete_item(self):
@@ -138,9 +133,13 @@ class MainWindow(QMainWindow):
         self.save_tasks()
         self.refresh_task_list_view()
 
-    # checkmark change
+    # on item changed
+        # when an item on the list is changed
+        # handles text edit
+        # handles checkmark
     def on_item_changed(self, item):
         selected_row = self.task_list_view.row(item)
+        self._tasks[selected_row]["text"] = item.text()
         self._tasks[selected_row]["done"] = item.checkState() == Qt.CheckState.Checked
         self.save_tasks()
 
@@ -160,7 +159,3 @@ def main():
 ### ---------------------------- ### TEST ### ------ ###
 if __name__=="__main__":
     main()
-
-
-
-### ---------------------------- ### NOTES ### ------ ###
