@@ -1,5 +1,8 @@
 venv/
+dist/
+build/
 study files/
 __pycache__/
 *.pyc
 .env
+todo.md
