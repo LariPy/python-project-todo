@@ -38,6 +38,7 @@ class MainWindow(QMainWindow):
         """### Init: Menu Bar ###"""
         help_menu = self.menuBar().addMenu("Help")
         help_menu.addAction("Open Data Folder", self.open_data_folder)
+        help_menu.addAction("Toggle Light/Dark Mode", self.toggle_theme)
 
         """### Init: Contents/Layout ###"""
         ### Layout
@@ -159,12 +160,21 @@ class MainWindow(QMainWindow):
         path = QUrl.fromLocalFile(str(self._FILE.resolve().parent))
         QDesktopServices.openUrl(path)
 
+    # light/dark mode
+    def toggle_theme(self):
+        hints = QApplication.styleHints()
+        if hints.colorScheme() == Qt.ColorScheme.Dark:
+            hints.setColorScheme(Qt.ColorScheme.Light)
+        else:
+            hints.setColorScheme(Qt.ColorScheme.Dark)
+
 
 
 ### ---------------------------- ### MAIN ### ------ ###
 def main():
     app = QApplication(sys.argv)
     app.setApplicationName("Todo App")
+    app.styleHints().setColorScheme(Qt.ColorScheme.Dark)
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
