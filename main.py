@@ -58,11 +58,13 @@ class MainWindow(QMainWindow):
         # mid content
         # task list view
         self.task_list_view = QListWidget()
-        self.task_list_view.setSelectionMode(QListWidget.ExtendedSelection)
+        self.task_list_view.setSelectionMode(QListWidget.ExtendedSelection) # allow selection of items
+        self.task_list_view.setDragDropMode(QListWidget.InternalMove) # allow dragging of items
         mid.addWidget(self.task_list_view)
         # refresh view on launch, item changed signal
         self.refresh_task_list_view()
         self.task_list_view.itemChanged.connect(self.on_item_changed)
+        self.task_list_view.model().rowsMoved.connect(self.sync_tasks_from_list) # emit signal for handler
 
         # footer content
         delete_item_btn = QPushButton("Delete Item")
@@ -98,6 +100,7 @@ class MainWindow(QMainWindow):
         self._FILE.write_text(json.dumps(self._tasks, indent=2), encoding="utf-8")
 
     # refresh task list view
+    # creates widget items for the task list using data from tasks.json
     def refresh_task_list_view(self):
         self.task_list_view.clear()
         for task in self._tasks:
@@ -107,12 +110,13 @@ class MainWindow(QMainWindow):
             self.task_list_view.addItem(item)
 
     # add task
+    # adds task items to tasks.json
     def add_task(self):
         text = self.task_input.text().strip()
         if not text:
             return
-        test_item = {"text": text, "done": False}
-        self._tasks.append(test_item)
+        task_item = {"text": text, "done": False}
+        self._tasks.append(task_item)
         self.save_tasks()
         self.refresh_task_list_view()
         self.task_input.clear()
@@ -153,6 +157,17 @@ class MainWindow(QMainWindow):
         selected_row = self.task_list_view.row(item)
         self._tasks[selected_row]["text"] = item.text()
         self._tasks[selected_row]["done"] = item.checkState() == Qt.CheckState.Checked
+        self.save_tasks()
+
+    # drag and drop sync handler
+    def sync_tasks_from_list(self):
+        new_list = []
+        for index in range(self.task_list_view.count()):
+            item = self.task_list_view.item(index)
+            text = item.text()
+            done = item.checkState() == Qt.CheckState.Checked
+            new_list.append({"text": text, "done": done})
+        self._tasks = new_list
         self.save_tasks()
 
     # open data folder
