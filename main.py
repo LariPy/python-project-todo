@@ -36,9 +36,14 @@ class MainWindow(QMainWindow):
         self.resize(560, 560)
 
         """### Init: Menu Bar ###"""
+        # Menu Bar - Help Menu
         help_menu = self.menuBar().addMenu("Help")
         help_menu.addAction("Open Data Folder", self.open_data_folder)
         help_menu.addAction("Toggle Light/Dark Mode", self.toggle_theme)
+        # Menu Bar - Sort Menu
+        sort_menu = self.menuBar().addMenu("Sort")
+        sort_menu.addAction("By Completion (Ascending)", self.sort_completion_ascending)
+        sort_menu.addAction("By Completion (Descending)", self.sort_completion_descending)
 
         """### Init: Contents/Layout ###"""
         ### Layout
@@ -87,6 +92,9 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(container)
 
     """### Methods ###"""
+
+    ### Persistence ###
+
     # load tasks
     def load_tasks(self):
         if self._FILE.exists():
@@ -108,6 +116,8 @@ class MainWindow(QMainWindow):
             item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEditable)
             item.setCheckState(Qt.CheckState.Checked if task["done"] else Qt.CheckState.Unchecked)
             self.task_list_view.addItem(item)
+
+    ### Buttons ###
 
     # add task
     # adds task items to tasks.json
@@ -149,6 +159,65 @@ class MainWindow(QMainWindow):
         self.save_tasks()
         self.refresh_task_list_view()
 
+    ### Menu Bar Methods ###
+
+    ### Help menu
+
+    # open data folder
+    def open_data_folder(self):
+        path = QUrl.fromLocalFile(str(self._FILE.resolve().parent))
+        QDesktopServices.openUrl(path)
+
+    # light/dark mode
+    def toggle_theme(self):
+        hints = QApplication.styleHints()
+        if hints.colorScheme() == Qt.ColorScheme.Dark:
+            hints.setColorScheme(Qt.ColorScheme.Light)
+        else:
+            hints.setColorScheme(Qt.ColorScheme.Dark)
+
+    ### Sort menu
+
+    # sort by completion ascending
+    def sort_completion_ascending(self):
+        new_list = []
+        tasks_copy = self._tasks.copy()
+        
+        # first add completed to new list
+        for item in tasks_copy:
+            if item['done']:
+                new_list.append(item)
+        # then add not completed to new list
+        for item in tasks_copy:
+            if item['done'] == False:
+                new_list.append(item)
+
+        # save changes
+        self._tasks = new_list
+        self.save_tasks()
+        self.refresh_task_list_view()
+
+    # sort by completion descending
+    def sort_completion_descending(self):
+        new_list = []
+        tasks_copy = self._tasks.copy()
+        
+        # first add not completed to new list
+        for item in tasks_copy:
+            if item['done'] == False:
+                new_list.append(item)
+        # then add completed to new list
+        for item in tasks_copy:
+            if item['done']:
+                new_list.append(item)
+        
+        # save changes
+        self._tasks = new_list
+        self.save_tasks()
+        self.refresh_task_list_view()
+
+    ### Event Handling: Handler methods ###
+
     # on item changed
         # when an item on the list is changed
         # handles text edit
@@ -169,20 +238,7 @@ class MainWindow(QMainWindow):
             new_list.append({"text": text, "done": done})
         self._tasks = new_list
         self.save_tasks()
-
-    # open data folder
-    def open_data_folder(self):
-        path = QUrl.fromLocalFile(str(self._FILE.resolve().parent))
-        QDesktopServices.openUrl(path)
-
-    # light/dark mode
-    def toggle_theme(self):
-        hints = QApplication.styleHints()
-        if hints.colorScheme() == Qt.ColorScheme.Dark:
-            hints.setColorScheme(Qt.ColorScheme.Light)
-        else:
-            hints.setColorScheme(Qt.ColorScheme.Dark)
-
+            
 
 
 ### ---------------------------- ### MAIN ### ------ ###
