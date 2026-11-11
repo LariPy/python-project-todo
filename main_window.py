@@ -52,7 +52,7 @@ class MainWindow(QMainWindow):
         sort_menu.addAction("By Completion (Descending)", self.sort_completion_descending)
         # Menu Bar - Help Menu
         help_menu = self.menuBar().addMenu("Help")
-        help_menu.addAction("About", lambda: about(self, "About", "Version 1"))
+        help_menu.addAction("About", lambda: about(self, "About", "v1.0.0"))
 
         """### Init: Contents/Layout ###"""
         ### Layout
