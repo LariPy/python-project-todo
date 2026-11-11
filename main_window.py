@@ -21,7 +21,7 @@ from PySide6.QtCore import (
 from PySide6.QtGui import QDesktopServices
 
 from task_store import TaskStore
-from confirmation import confirm
+from dialogues import confirm, about
 
 
 
@@ -43,14 +43,17 @@ class MainWindow(QMainWindow):
         self.resize(560, 560)
 
         """### Init: Menu Bar ###"""
-        # Menu Bar - Help Menu
-        help_menu = self.menuBar().addMenu("Help")
-        help_menu.addAction("Open Data Folder", self.open_data_folder)
-        help_menu.addAction("Toggle Light/Dark Mode", self.toggle_theme)
+        # Menu Bar - File Menu
+        file_menu = self.menuBar().addMenu("File")
+        file_menu.addAction("Open Data Folder", self.open_data_folder)
+        file_menu.addAction("Toggle Light/Dark Mode", self.toggle_theme)
         # Menu Bar - Sort Menu
         sort_menu = self.menuBar().addMenu("Sort")
         sort_menu.addAction("By Completion (Ascending)", self.sort_completion_ascending)
         sort_menu.addAction("By Completion (Descending)", self.sort_completion_descending)
+        # Menu Bar - Help Menu
+        help_menu = self.menuBar().addMenu("Help")
+        help_menu.addAction("About", lambda: about(self, "About", "Version 1"))
 
         """### Init: Contents/Layout ###"""
         ### Layout

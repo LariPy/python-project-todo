@@ -16,3 +16,6 @@ from PySide6.QtWidgets import (
 def confirm(parent, title, message):
     result = QMessageBox.question(parent, title, message, QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
     return result == QMessageBox.StandardButton.Yes
+
+def about(parent, title, message):
+    QMessageBox.about(parent, title, message)
