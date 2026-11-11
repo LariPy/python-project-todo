@@ -21,6 +21,7 @@ from PySide6.QtCore import (
 from PySide6.QtGui import QDesktopServices
 
 from task_store import TaskStore
+from confirmation import confirm
 
 
 
@@ -133,6 +134,9 @@ class MainWindow(QMainWindow):
 
     # clear completed
     def clear_completed(self):
+        # if list is empty -check
+        if not self.task_list_view.count():
+            return
         new_list = []
         for task in self.store._tasks:
             if task["done"] == False:
@@ -143,10 +147,14 @@ class MainWindow(QMainWindow):
 
     # clear list
     def clear_list(self):
-        self.task_list_view.clear()
-        self.store._tasks = []
-        self.store.save_tasks()
-        self.refresh_task_list_view()
+        # if list is empty -check
+        if not self.task_list_view.count():
+            return
+        if confirm(self, "Clear List", "Do you want to clear the list?"):
+            self.task_list_view.clear()
+            self.store._tasks = []
+            self.store.save_tasks()
+            self.refresh_task_list_view()
 
     ### Menu Bar Methods ###
 
