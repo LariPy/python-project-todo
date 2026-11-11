@@ -1,12 +1,8 @@
 
 """
-confirmation
-pop up a window
-ask "are you sure"
-buttons "yes" and "no"
-yes = returns true
-no = returns false
-
+Dialogues
+- confirm popup for confirming an action (such as Clear List)
+- about popup for Help -> About, shows app version
 """
 
 from PySide6.QtWidgets import (

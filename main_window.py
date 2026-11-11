@@ -15,10 +15,9 @@ from PySide6.QtWidgets import (
     )
 
 from PySide6.QtCore import (
-    Qt, QStandardPaths, QUrl
+    Qt, QStandardPaths
     )
 
-from PySide6.QtGui import QDesktopServices
 
 from task_store import TaskStore
 from dialogues import confirm, about
@@ -161,12 +160,11 @@ class MainWindow(QMainWindow):
 
     ### Menu Bar Methods ###
 
-    ### Help menu
+    ### File menu
 
     # open data folder
     def open_data_folder(self):
-        path = QUrl.fromLocalFile(str(self._FILE.resolve().parent))
-        QDesktopServices.openUrl(path)
+        self.store.open_data_folder()
 
     # light/dark mode
     def toggle_theme(self):

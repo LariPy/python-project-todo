@@ -10,6 +10,12 @@ Task Store
 import json
 from pathlib import Path
 
+from PySide6.QtCore import (
+    QUrl
+    )
+
+from PySide6.QtGui import QDesktopServices
+
 ### ---------------------------- ### CLASS ### ------ ###
 
 class TaskStore:
@@ -38,3 +44,7 @@ class TaskStore:
     def add(self, text):
         self._tasks.append({"text": text, "done": False})
         self.save_tasks()
+
+    def open_data_folder(self):
+        path = QUrl.fromLocalFile(str(self._FILE.resolve().parent))
+        QDesktopServices.openUrl(path)
